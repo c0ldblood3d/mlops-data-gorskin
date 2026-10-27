@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "mlops-data-gorskin"
+version = "0.1.0"
+description = "DVC and ClearML data versioning practice"
+authors = ["Gorskin Andrey andreyka.gorskin@mail.ru"]
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "==3.1.0"
+scikit-learn = "==1.9.1"
+dvc = "==3.67.1"
+clearml = "==2.1.12"
