@@ -2,6 +2,7 @@ from __future__ import annotations
 import hashlib, sys
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 IRIS_COLS = ["sepal length (cm)", "sepal width (cm)",
@@ -36,10 +37,21 @@ def check_iris(p: Path) -> None:
     if not set(IRIS_COLS).issubset(df.columns):
         raise SystemExit(f"{p.name}: потеряны исходные столбцы")
     if "sepal_area" in df.columns:
-        if not (df["sepal_area"] == df["sepal length (cm)"] * df["sepal width (cm)"]).all():
+        if not np.isclose(df["sepal_area"],
+                      df["sepal length (cm)"] * df["sepal width (cm)"],
+                      rtol=1e-9, atol=1e-12).all():
             raise SystemExit(f"{p.name}: неверный sepal_area")
     if "petal_area" in df.columns:
-        if not (df["petal_area"] == df["petal length (cm)"] * df["petal width (cm)"]).all():
+        if not np.isclose(df["petal_area"],
+                      df["petal length (cm)"] * df["petal width (cm)"],
+                      rtol=1e-9, atol=1e-12).all():
+            raise SystemExit(f"{p.name}: неверный petal_area")
+    if "petal_area" in df.columns:
+        if not np.isclose(
+            df["petal_area"],
+            df["petal length (cm)"] * df["petal width (cm)"],
+            rtol=1e-9, atol=1e-12,
+        ).all():
             raise SystemExit(f"{p.name}: неверный petal_area")
 
 def check_wine(p: Path) -> None:
