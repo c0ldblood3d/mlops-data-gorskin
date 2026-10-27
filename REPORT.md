@@ -7,7 +7,7 @@
 | Python | 3.12 |
 | pandas | 3.1.0 |
 | scikit-learn | 1.9.1 |
-| DVC | 3.67.1 |
+| DVC | 3.67.1 |        
 | ClearML | 2.1.12 |
 | Poetry | 2.x (lock-файл зафиксирован) |
 
@@ -17,7 +17,7 @@
 
 - Локальный Git-репозиторий: `mlops-data-gorskin`
 - Основная ветка: `main`
-- Ссылка на удалённый Git-репозиторий: TODO (если публикуете на GitHub/GitLab — вставьте ссылку; иначе укажите «локальный репозиторий»)
+- Ссылка на удалённый Git-репозиторий: https://github.com/c0ldblood3d/mlops-data-gorskin
 
 ---
 
