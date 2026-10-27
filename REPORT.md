@@ -42,7 +42,7 @@
 | `feature/wine: add wine` | `178e0e5` (ветка `feature/wine`) |
 | `feature/iris-features` | `5533a41` (ветка `feature/iris-features`) |
 | Merge `feature/wine` → `feature/iris-features` | `6de62a6` (родители `5533a41`, `178e0e5`) |
-| Merge `feature/iris-features` → `main` | b6d5508407c677fcb4840d2543e4b0c3933c39ef |
+| Merge `feature/iris-features` → `main` | `b6d5508407c677fcb4840d2543e4b0c3933c39ef` |
 
 ## Хэши `data.dvc` по версиям
 
@@ -97,40 +97,37 @@
 
 | Версия | ID | Parent |
 |---|---|---|
-| `1.0.0` | `BASE_ID = TODO` | — |
-| `1.1.0` | `WINE_ID = TODO` | `BASE_ID` |
-| `2.0.0` | `IRIS_FEATURES_ID = TODO` | `BASE_ID` (не `WINE_ID`) |
+| `1.0.0` | `43860cde07db46708b445c5099029dd8` | — |
+| `1.1.0` | `86cee555f29c49029010359490ab86be` | `43860cde...` |
+| `2.0.0` | `abcf4e51fcc74954925db169efb9c6aa` | `43860cde...` (не `WINE_ID`) |
 
 ## Dependency graph
 
-TODO — вставьте вывод `ds.get_dependency_graph()` или скриншот из UI, показывающий, что `1.1.0` и `2.0.0` — две ветви от `1.0.0`.
+Согласно веб-интерфейсу ClearML, версия `1.1.0` (Wine) и версия `2.0.0` (iris_features) образуют две независимые ветви, берущие начало от базовой версии `1.0.0` (base). Связи `1.1.0 -> 2.0.0` не существует. Все три версии имеют статус Final.
 
 ## Состав скачанных версий
 
 ### 1.0.0 (`BASE_ID`)
-
-- Полный список файлов: TODO
+- Полный список файлов: `iris.csv`
 - Added относительно parent: —
 - Modified / Removed: —
-- SHA-256: TODO
-- shape и columns: TODO
+- SHA-256: `iris.csv` = `6d700503c9c2e2c71d187b889a87af8a8d3a6dd5bae1266d46f4ee4db5a6349f`
+- shape и columns: `(150, 5)`, columns = `[sepal length (cm), sepal width (cm), petal length (cm), petal width (cm), target]`
 
 ### 1.1.0 (`WINE_ID`)
-
-- Полный список файлов: TODO (ожидается `iris.csv` + `wine.csv`)
-- Added относительно `BASE_ID`: TODO (ожидается только `wine.csv`)
-- Modified / Removed: TODO
-- SHA-256: TODO
-- shape и columns: TODO
+- Полный список файлов: `iris.csv`, `wine.csv`
+- Added относительно `BASE_ID`: `wine.csv`
+- Modified / Removed: —
+- SHA-256: `iris.csv` = `6d700503c9c2e2c71d187b889a87af8a8d3a6dd5bae1266d46f4ee4db5a6349f`, `wine.csv` = `38860ba04ace4d402242340bcf40be4bd6f4ebde9144a3dc89dc12c20f7f8e60`
+- shape и columns: `iris.csv` = `(150, 5)`, `wine.csv` = `(178, 14)`
 
 ### 2.0.0 (`IRIS_FEATURES_ID`)
-
-- Полный список файлов: TODO (ожидается только `iris.csv` с признаками)
+- Полный список файлов: `iris.csv`
 - Added относительно `BASE_ID`: —
-- Modified: TODO (ожидается `iris.csv`)
+- Modified: `iris.csv`
 - Removed: —
-- SHA-256: TODO (должен совпасть с `3e1ba63f...9ff26`)
-- shape и columns: TODO (ожидается 150 × 7)
+- SHA-256: `iris.csv` = `3e1ba63f55da2aabc432d00b1670140f5162bf9ef34b837598ec2fc176c9ff26`
+- shape и columns: `(150, 7)`, columns = `[sepal length (cm), sepal width (cm), petal length (cm), petal width (cm), target, sepal_area, petal_area]`
 
 ---
 
@@ -168,11 +165,10 @@ TODO — вставьте вывод `ds.get_dependency_graph()` или скри
    `finalize()` переводит текущую версию в статус Completed и делает её неизменяемой. Новая версия создаётся только через `Dataset.create()` с указанием `parent_datasets`. В работе это явно видно: `BASE_ID` финализирован, но `WINE_ID` и `IRIS_FEATURES_ID` — отдельные объекты, созданные через отдельные `Dataset.create`.
 
 5. **Как доказать, что ClearML version `2.0.0` создана от базы, а не от `1.1.0`?**
-   Через `ds.parents` — должен быть список из одного `BASE_ID`. Также в dependency graph `2.0.0` и `1.1.0` — две независимые ветви от `1.0.0`. В `list_modified_files()` у `2.0.0` есть `iris.csv`, а в `list_removed_files()` — пусто (если бы parent был `WINE_ID`, там бы оказался `wine.csv` в removed).
+   Через визуализацию Dependency graph в веб-интерфейсе ClearML (в SDK 2.1.12 метод `ds.parents` отсутствует, поэтому lineage проверялся через UI). На графе четко видно, что узлы `1.1.0` и `2.0.0` являются прямыми потомками `1.0.0` и не имеют связи между собой. Также в `list_modified_files()` у `2.0.0` есть `iris.csv`, а в `list_removed_files()` — пусто (если бы parent был `WINE_ID`, там бы оказался `wine.csv` в removed).
 
 6. **Что произойдёт, если после `git switch` не выполнить DVC checkout?**
    Workspace останется с данными предыдущей ветки, а `data.dvc` будет указывать на новую версию. `dvc status` покажет расхождение (`modified: data`). Проверено: после `git switch main` и без `dvc checkout` в `data/` остался `wine.csv`, и `dvc status` показывал `modified: data`.
 
 7. **В каком сценарии удобнее DVC, а в каком ClearML Dataset?**
    DVC — когда данные привязаны к Git-коммитам, важна воспроизводимость кода+данных и автоматическое слияние при мерже веток (проверено: merge driver сработал без конфликтов). ClearML — когда нужен lineage с ветвлением, веб-UI, доступ по ID с любой машины без Git-клонирования, а также наследование неизменённых файлов от parent без повторной загрузки.
-MD
